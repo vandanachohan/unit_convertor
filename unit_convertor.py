@@ -1,5 +1,12 @@
 import streamlit as st
-from forex_python.converter import CurrencyRates  # type: ignore
+from forex_python.converter import CurrencyRates
+
+# Ensure forex-python is installed
+try:
+    c = CurrencyRates()
+except ModuleNotFoundError:
+    st.error("The required module 'forex_python' is missing. Please install it using 'pip install forex-python'.")
+    st.stop()
 
 # Streamlit UI settings
 st.set_page_config(page_title="Unit Converter", layout="centered")
@@ -58,12 +65,11 @@ def convert_speed(value, from_unit, to_unit):
 
 def convert_currency(value, from_currency, to_currency):
     try:
-        c = CurrencyRates()
         return c.convert(from_currency, to_currency, value)
     except Exception as e:
         return None, str(e)
 
-# Auto Conversion
+# Conversion Logic
 if conversion_type == "Length":
     from_unit = st.selectbox("From Unit", ["Meter", "Kilometer", "Mile", "Inch"], key="from_length")
     to_unit = st.selectbox("To Unit", ["Meter", "Kilometer", "Mile", "Inch"], key="to_length")
@@ -110,10 +116,5 @@ elif conversion_type == "Currency":
         else:
             st.error(f"Invalid currency code or API error: {error_message}")
 
-# Display Conversion History
-if st.sidebar.button("Show History"):
-    st.sidebar.write("### Conversion History")
-    for item in st.session_state.history[-10:]:
-        st.sidebar.write(item)
-
 st.sidebar.info("Built with ❤️ by Vandana using Streamlit with AI-powered enhancements")
+
